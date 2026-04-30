@@ -568,6 +568,9 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `
         }
+        <button class="share-button" data-activity="${name}" aria-label="Share this activity">
+          🔗 Share
+        </button>
       </div>
     `;
 
@@ -587,7 +590,94 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Add click handler for share button
+    const shareButton = activityCard.querySelector(".share-button");
+    shareButton.addEventListener("click", (event) => {
+      shareActivity(event, name, details);
+    });
+
     activitiesList.appendChild(activityCard);
+  }
+
+  // Share an activity with friends
+  function shareActivity(event, name, details) {
+    const shareTitle = `Check out "${name}" at Mergington High School!`;
+    const shareText = `${details.description} – Schedule: ${formatSchedule(details)}`;
+    // Include the activity name as a URL hash so the link points directly to it
+    const shareUrl = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name)}`;
+
+    // Use the native Web Share API if available (mobile / modern browsers)
+    if (navigator.share) {
+      navigator
+        .share({ title: shareTitle, text: shareText, url: shareUrl })
+        .catch(() => {}); // user may cancel – that's fine
+      return;
+    }
+
+    // Fallback: show a small share popover
+    // Remove any existing popover first
+    const existing = document.getElementById("share-popover");
+    if (existing) {
+      existing.remove();
+    }
+
+    const encodedText = encodeURIComponent(`${shareTitle} ${shareText}`);
+    const encodedUrl = encodeURIComponent(shareUrl);
+
+    const popover = document.createElement("div");
+    popover.id = "share-popover";
+    popover.className = "share-popover";
+    popover.innerHTML = `
+      <div class="share-popover-title">Share this activity</div>
+      <div class="share-popover-buttons">
+        <a class="share-option share-twitter"
+           href="https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}"
+           target="_blank" rel="noopener noreferrer" aria-label="Share on X (Twitter)">
+          𝕏
+        </a>
+        <a class="share-option share-facebook"
+           href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}"
+           target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+          f
+        </a>
+        <a class="share-option share-whatsapp"
+           href="https://wa.me/?text=${encodedText}%20${encodedUrl}"
+           target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
+          💬
+        </a>
+        <button class="share-option share-copy" aria-label="Copy link">
+          📋
+        </button>
+      </div>
+    `;
+
+    // Position the popover near the share button
+    const button = event.currentTarget;
+    button.parentElement.classList.add("share-actions-wrapper");
+    button.parentElement.appendChild(popover);
+
+    // Copy-link handler
+    popover.querySelector(".share-copy").addEventListener("click", () => {
+      navigator.clipboard
+        .writeText(shareUrl)
+        .then(() => {
+          showMessage("Link copied to clipboard!", "success");
+          popover.remove();
+        })
+        .catch(() => {
+          showMessage("Could not copy link.", "error");
+        });
+    });
+
+    // Close popover when clicking outside (ignore clicks on the button itself)
+    function closePopover(e) {
+      if (!popover.contains(e.target) && !button.contains(e.target)) {
+        popover.remove();
+        document.removeEventListener("click", closePopover);
+      }
+    }
+    // Delay so this click doesn't immediately close it
+    setTimeout(() => document.addEventListener("click", closePopover), 0);
   }
 
   // Event listeners for search and filter
