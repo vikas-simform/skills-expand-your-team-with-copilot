@@ -187,7 +187,8 @@ section h3 {
   margin-top: auto;
   padding-top: 10px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Activity Tag */
@@ -663,4 +664,96 @@ footer {
 
 #logout-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Share button on activity cards */
+.share-actions-wrapper {
+  position: relative;
+}
+
+.share-button {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s ease;
+}
+
+.share-button:hover {
+  background-color: var(--background);
+  color: var(--primary);
+  border-color: var(--primary-light);
+}
+
+/* Share popover */
+.share-popover {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: 10px 14px;
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.share-popover-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.share-popover-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.share-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: opacity 0.2s ease;
+}
+
+.share-option:hover {
+  opacity: 0.8;
+}
+
+.share-twitter {
+  background-color: #000;
+  color: #fff;
+}
+
+.share-facebook {
+  background-color: #1877f2;
+  color: #fff;
+}
+
+.share-whatsapp {
+  background-color: #25d366;
+  color: #fff;
+}
+
+.share-copy {
+  background-color: var(--background);
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary);
 }
